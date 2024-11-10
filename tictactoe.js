@@ -70,12 +70,11 @@ function Controller()
 
     const printRound = () => {
         console.log(board.getBoard());
-        console.log(`${activePlayer.getName()}'s turn`);
-        console.log("===========================");
     }
 
     const playRound = () => {
-        console.log("playing")
+        console.log(`${activePlayer.getName()}'s turn`);
+        console.log("===========================");
         printRound();
         switchPlayer();
     }
