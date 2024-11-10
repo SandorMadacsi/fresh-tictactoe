@@ -50,18 +50,43 @@ function Cell(){
     return {setValue, getValue};
 }
 
-function Controller(
-    player1 = Player("player1", "x"),
-    player2 = Player("player2", "o")){
+function Controller()
+{
+
+    player1 = Player("player1", "x");
+    player2 = Player("player2", "o");
 
     const board = Board();
 
 
+    let activePlayer = player1;
+    
+
+    const switchPlayer = () => {
+        activePlayer == player1 ? activePlayer = player2 : activePlayer = player1;
+    }
+
+    const getActivePlayer = () => activePlayer;
+
+    const printRound = () => {
+        console.log(board.getBoard());
+        console.log(`${activePlayer.getName()}'s turn`);
+        console.log("===========================");
+    }
+
+    const playRound = () => {
+        console.log("playing")
+        printRound();
+        switchPlayer();
+    }
+
+    return{playRound,getActivePlayer}
+
     }
     
 function Player(name, token){
-    const name = name;
-    const token = token;
+    this.name = name;
+    this.token = token;
     let score = 0;
 
     const getName = () => name;
@@ -80,3 +105,5 @@ function boardInterface()
     // UI / DOM LOGIC GOES HERE
 
 }
+
+const game = Controller();
