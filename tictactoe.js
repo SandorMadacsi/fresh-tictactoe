@@ -21,8 +21,10 @@ function Board(){
 
     const board = [];
 
-    for(let i = 0; i < 9; i++){
-        board.push(Cell());
+    const setBoard = () => {
+        for(let i = 0; i < 9; i++){
+        board.push(new Cell());
+        }
     }
 
     const getBoard = () => {
@@ -33,7 +35,15 @@ function Board(){
         board[cellPos].setValue(playerToken);
     }
 
-    return{getBoard, dropToken}
+    const checkMove = move => {
+        if(board[move] !== undefined &&
+           board[move].getValue() === null
+        )return true;
+        else
+        return false;
+    }
+
+    return{setBoard, getBoard, dropToken, checkMove}
 }
 
 
@@ -53,17 +63,21 @@ function Cell(){
 function Controller()
 {
 
-    player1 = Player("player1", "x");
-    player2 = Player("player2", "o");
+    const player1 = new Player("player1", "x");
+    const player2 = new Player("player2", "o");
+ 
 
-    const board = Board();
+    let isPlaying = true;
+    let board = new Board();
 
 
     let activePlayer = player1;
     
 
     const switchPlayer = () => {
-        activePlayer == player1 ? activePlayer = player2 : activePlayer = player1;
+        console.log("switching")
+        activePlayer === player1 ? activePlayer = player2 : activePlayer = player1;
+
     }
 
     const getActivePlayer = () => activePlayer;
@@ -73,15 +87,66 @@ function Controller()
     }
 
     const playRound = () => {
+
+        let move = Math.floor(Math.random() * 9);
         console.log(`${activePlayer.getName()}'s turn`);
+        console.log(`${activePlayer.getToken()}`)
         console.log("===========================");
-        printRound();
-        switchPlayer();
+        if(board.checkMove(move)){
+            console.log(`Dropping ${getActivePlayer().getName()}'s token into cell: ${move}`)
+            board.dropToken(move, getActivePlayer().getToken());
+            printRound();
+            for(let winCon in winConditions){
+                checkWinCon(winConditions[winCon])
+            }
+            switchPlayer();
+            console.log(getActivePlayer().getName())
+        }
+        
+
     }
 
-    return{playRound,getActivePlayer}
+    const checkWinCon = (rows) => {
+        let currentBoard = board.getBoard();
+        let currentRow = [];
+        
+        for(let row in rows){
+            let counter = 0;
+            currentRow = rows[row];
+            currentRow.forEach(element => {
+                if(currentBoard[element] === activePlayer.getToken()){
+                    counter++;
+                  }
+                
+            });
+            if(counter == 3){
+                console.log(`${activePlayer.getName()} won`)
+                isPlaying = false;
+            }
 
+        }
     }
+
+    const play = () => {
+
+        board.setBoard();
+        isPlaying = true;
+
+        while(isPlaying && board.getBoard().includes(null)){
+            playRound();
+        }
+        if(!isPlaying){
+            console.log("Game Over");
+
+        }
+        else if(!board.getBoard().includes(null)){
+            console.log("its a draw");
+        }
+    }
+
+    return{playRound,play,getActivePlayer}
+
+}
     
 function Player(name, token){
     this.name = name;
@@ -89,7 +154,7 @@ function Player(name, token){
     let score = 0;
 
     const getName = () => name;
-    const getToken = () => token;
+    const getToken = () => this.token;
     const getScore = () => score;
     const setScore = () => {
         this.score = score + 1;
