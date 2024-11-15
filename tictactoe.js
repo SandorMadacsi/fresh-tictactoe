@@ -5,7 +5,6 @@ const winConditions = [
        [3,4,5],
        [6,7,8]
    ],
-   
    [
        [0,3,6],
        [1,4,7],
@@ -19,9 +18,10 @@ const winConditions = [
 ]
 function Board(){
 
-    const board = [];
+    let board = [];
 
     const setBoard = () => {
+        board = [];
         for(let i = 0; i < 9; i++){
         board.push(new Cell());
         }
@@ -68,7 +68,7 @@ function Controller()
  
 
     let isPlaying = true;
-    let board = new Board();
+    let board = Board();
 
 
     let activePlayer = player1;
@@ -92,7 +92,7 @@ function Controller()
         console.log(`${activePlayer.getName()}'s turn`);
         console.log(`${activePlayer.getToken()}`)
         console.log("===========================");
-        if(board.checkMove(move)){
+        if(isPlaying && board.checkMove(move)){
             console.log(`Dropping ${getActivePlayer().getName()}'s token into cell: ${move}`)
             board.dropToken(move, getActivePlayer().getToken());
             printRound();
@@ -100,33 +100,38 @@ function Controller()
                 checkWinCon(winConditions[winCon])
             }
             switchPlayer();
-            console.log(getActivePlayer().getName())
+    
         }
         
 
     }
 
+    // Checks a single win condition eg. horizontal cells , vertical cells, diagonal cells
     const checkWinCon = (rows) => {
         let currentBoard = board.getBoard();
         let currentRow = [];
+      
         
         for(let row in rows){
             let counter = 0;
             currentRow = rows[row];
-            currentRow.forEach(element => {
-                if(currentBoard[element] === activePlayer.getToken()){
-                    counter++;
-                  }
-                
-            });
-            if(counter == 3){
-                console.log(`${activePlayer.getName()} won`)
-                isPlaying = false;
+            if(isPlaying){
+                currentRow.forEach(element => {
+                    if(currentBoard[element] === activePlayer.getToken()){
+                        counter++;
+                      }
+                    
+                });
+                if(counter == 3){
+                    console.log(`${activePlayer.getName()} won`)
+                    isPlaying = false;
+                }
             }
 
         }
     }
 
+    // Play is run each time a game is played. A play can end in win of either side or draw.
     const play = () => {
 
         board.setBoard();
