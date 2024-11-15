@@ -19,13 +19,14 @@ const winConditions = [
 function Board(){
 
     let board = [];
+    
 
-    const setBoard = () => {
+    this.init = function(){
         board = [];
         for(let i = 0; i < 9; i++){
         board.push(new Cell());
         }
-    }
+    };
 
     const getBoard = () => {
         return board.map((cell) => cell.getValue());
@@ -42,8 +43,9 @@ function Board(){
         else
         return false;
     }
+    this.init();
 
-    return{setBoard, getBoard, dropToken, checkMove}
+    return{init:this.init, getBoard, dropToken, checkMove}
 }
 
 
@@ -134,7 +136,7 @@ function Controller()
     // Play is run each time a game is played. A play can end in win of either side or draw.
     const play = () => {
 
-        board.setBoard();
+        board.init();
         isPlaying = true;
 
         while(isPlaying && board.getBoard().includes(null)){
@@ -173,29 +175,23 @@ function BoardInterface()
 {
     let canvas = document.querySelector('.canvas-container');
     let playButton = document.querySelector('.play');
-    
+
     const game = Controller();
     playButton.addEventListener('click', function(){
         game.play();
         displayBoard();
+        
     });
 
     const displayBoard = () => {
 
         const board = game.getBoard();
 
-        
 
         canvas.innerHTML = "";
         canvas.setAttribute('style', `display:grid;
                                       grid-template-columns:repeat(3, 1fr)`);
                                     
-        
-
-    
-     //board.forEach(cell,i) => {
-        console.log(board);
-    // }
         board.forEach((cell , i) => {
 
         let unit = document.createElement('div');
@@ -249,7 +245,7 @@ function BoardInterface()
     // }
 
 
-
+    displayBoard();
     return{displayBoard}
 
 }

@@ -8,6 +8,9 @@ html, body, *{
     text-align: center;
     font-family: 'Bebas Neue', sans-serif;
 }
+body{
+    background-color: black;
+}
 h1{
     font-size: 70px;;
 }
@@ -36,14 +39,14 @@ border:1px solid black;
 
 
 .ui{
-    display: flex;
-    justify-content: space-evenly;
+    display: grid;
+    grid-template-columns:repeat(3, 1fr);
     align-items: center;
     font-size: 30px;
     width: 960px;
     background-color: rgb(54,69,79);
-    color: rgb(219,226,233);
-    border:1px solid black;
+    color: black;
+    border:5px solid black;
 }
 
 .unit-row{
@@ -53,13 +56,13 @@ border:1px solid black;
 }
 .unit{
     box-sizing:border-box;
-    background-color: white;
+    background-color: grey;
     border:1px solid black;
     
 }
 
 .unit:hover{
-    background-color: lightgoldenrodyellow;
+    background-color: rgb(107, 75, 75);
   }
   
 
@@ -87,8 +90,8 @@ button{
 
 
 button{
-    background-color: salmon;
-    border: 1px solid black;
+    background-color: grey;
+    border: 5px solid black;
 }
 
 button:hover {background-color:  rgb(185,185,185);
