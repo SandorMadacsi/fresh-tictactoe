@@ -122,3 +122,7 @@ footer {
   img:hover{
     transform: rotate(360deg);
   }
+
+  .gameover{
+    pointer-events: none;
+  }
