@@ -65,8 +65,8 @@ function Cell(){
 function Controller()
 {
 
-    const player1 = new Player("player1", "x");
-    const player2 = new Player("player2", "o");
+    let player1 = new Player("player1", "x");
+    const player2 = new Player("computer", "o");
  
 
     let isPlaying = true;
@@ -76,13 +76,19 @@ function Controller()
     let activePlayer = player1;
     
 
+
     const switchPlayer = () => {
         console.log("switching")
         activePlayer === player1 ? activePlayer = player2 : activePlayer = player1;
 
     }
 
+    const setPlayerName = (name) => player1.setName(name);
+
     const getActivePlayer = () => activePlayer;
+
+    const getComputerName = () => player2.getName();
+
 
     const printRound = () => {
         console.log(board.getBoard());
@@ -94,14 +100,17 @@ function Controller()
         console.log(`${activePlayer.getName()}'s turn`);
         console.log(`${activePlayer.getToken()}`)
         console.log("===========================");
-        if(isPlaying && board.checkMove(move)){
+        if(board.checkMove(move)){
             console.log(`Dropping ${getActivePlayer().getName()}'s token into cell: ${move}`)
             board.dropToken(move, getActivePlayer().getToken());
             printRound();
             for(let winCon in winConditions){
                 checkWinCon(winConditions[winCon])
             }
+        if(isPlaying){
             switchPlayer();
+        }
+           
     
         }
         
@@ -125,7 +134,6 @@ function Controller()
                     
                 });
                 if(counter == 3){
-                    console.log(`${activePlayer.getName()} won`)
                     isPlaying = false;
                 }
             }
@@ -139,48 +147,64 @@ function Controller()
         board.init();
         isPlaying = true;
 
+        
+
         while(isPlaying && board.getBoard().includes(null)){
             playRound();
         }
         if(!isPlaying){
-            console.log("Game Over");
+            return `${activePlayer.getName()} won`;
 
         }
         else if(!board.getBoard().includes(null)){
-            console.log("its a draw");
+           return "It's a draw";
         }
     }
 
-    return{playRound,play,getActivePlayer, getBoard: board.getBoard}
+    return{playRound,play,getActivePlayer,setPlayerName, getBoard: board.getBoard, getComputerName}
 
 }
     
-function Player(name, token){
-    this.name = name;
+function Player(n, token){
+    this.name = n;
     this.token = token;
     let score = 0;
 
-    const getName = () => name;
+    const getName = () => this.name;
+    const setName = (name1) => this.name = name1;
     const getToken = () => this.token;
     const getScore = () => score;
     const setScore = () => {
         this.score = score + 1;
     }
 
-    return{getName, getToken, getScore, setScore}
+    return{getName, setName, getToken, getScore, setScore}
 }
 
     
 function BoardInterface()
 {
+    const game = Controller();
     let canvas = document.querySelector('.canvas-container');
     let playButton = document.querySelector('.play');
+    let p1;
+    const p2 = game.getComputerName();
+    let p2nameContainer = document.querySelector("#p2-name");
+    p2nameContainer.innerText = p2;
 
-    const game = Controller();
+    let p1nameContainer = document.querySelector("#p1-name");
+    let state_message = document.querySelector('#state-message');
+    
+
+
+
+
     playButton.addEventListener('click', function(){
-        game.play();
+        p1 = prompt("Enter your name");
+        game.setPlayerName(p1);
+        p1nameContainer.innerText = p1;
+        state_message.innerHTML = game.play();
         displayBoard();
-        
     });
 
     const displayBoard = () => {
@@ -192,6 +216,9 @@ function BoardInterface()
         canvas.setAttribute('style', `display:grid;
                                       grid-template-columns:repeat(3, 1fr)`);
                                     
+
+                                      
+
         board.forEach((cell , i) => {
 
         let unit = document.createElement('div');
