@@ -66,7 +66,7 @@ function Controller()
 {
 
     let player1 = new Player("player1", "x");
-    const player2 = new Player("computer", "o");
+    const player2 = new Player("player2r", "o");
  
 
     let isPlaying = true;
@@ -84,7 +84,7 @@ function Controller()
 
     }
 
-    const setPlayerName = (name) => player1.setName(name);
+    const setPlayerName = (name,player) => player.setName(name);
 
     const getActivePlayer = () => activePlayer;
 
@@ -109,6 +109,7 @@ function Controller()
             console.log(`Dropping ${getActivePlayer().getName()}'s token into cell: ${move}`)
             board.dropToken(move, getActivePlayer().getToken());
             printRound();
+
             for(let winCon in winConditions){
                 checkWinCon(winConditions[winCon])
             }
@@ -119,11 +120,8 @@ function Controller()
         }
        else if(!isPlaying){
             return `${activePlayer.getName()} won`;
-
-
         }
         else {
-         
             switchPlayer();
             return "progress";
         }
@@ -137,7 +135,6 @@ function Controller()
         let currentBoard = board.getBoard();
         let currentRow = [];
       
-        
         for(let row in rows){
             let counter = 0;
             currentRow = rows[row];
@@ -146,7 +143,6 @@ function Controller()
                     if(currentBoard[element] === activePlayer.getToken()){
                         counter++;
                       }
-                    
                 });
                 if(counter == 3){
                     isPlaying = false;
@@ -158,8 +154,7 @@ function Controller()
 
     // Play is run each time a game is played. A play can end in win of either side or draw.
 
-
-    return{playRound,getActivePlayer,setPlayerName, getBoard: board.getBoard, getComputerName, play}
+    return{playRound,getActivePlayer,setPlayerName, getBoard: board.getBoard, play}
 
 }
     
@@ -186,21 +181,14 @@ function BoardInterface()
     let canvas = document.querySelector('.canvas-container');
     canvas.classList.add('gameover');
     let playButton = document.querySelector('.play');
-    let p1;
-    const p2 = game.getComputerName();
-    let p2nameContainer = document.querySelector("#p2-name");
-    p2nameContainer.innerText = p2;
 
-    let p1nameContainer = document.querySelector("#p1-name");
     let state_message = document.querySelector('#state-message');
-    state_message.innerHTML = "progress";
+    state_message.innerHTML = "start game";
 
     playButton.addEventListener('click', function(){
         canvas.classList.remove('gameover');
-        p1 = prompt("Enter your name");
-        game.setPlayerName(p1);
         game.play();
-        p1nameContainer.innerText = p1;
+
         state_message.innerHTML = "progress";
         displayBoard();
     });
@@ -257,8 +245,13 @@ function BoardInterface()
         value.innerText= cell;
     });
 
-    if(state_message.innerHTML != "progress"){
+    if(state_message.innerHTML == "progress"){
+        playButton.classList.add('gameover');
+    }
+
+   else{
         canvas.classList.add('gameover');
+        playButton.classList.remove('gameover');
     }
 
     }
@@ -276,9 +269,7 @@ function BoardInterface()
             displayBoard();
         }
 
-    
     }
-
 
     displayBoard();
     return{displayBoard}
