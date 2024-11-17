@@ -63,13 +63,15 @@ border:1px solid black;
 .unit{
     box-sizing:border-box;
     background-color: grey;
-    border:1px solid black;
+    border:10px solid black;
+    border-radius: 25px;
     
 }
 
 .unit:hover{
-    background-color: rgb(107, 75, 75);
+    background-color: rgb(255, 77, 77);
   }
+
   
 
 .filled{
@@ -88,11 +90,6 @@ button{
     margin:50px;
 }
 
-.checkbox{
-    width: 30px;
-    height:30px;
-    
-}
 
 
 button{
@@ -131,4 +128,8 @@ footer {
 
   .gameover{
     pointer-events: none;
+  }
+
+  .winner{
+    background-color: blue;
   }

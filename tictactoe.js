@@ -65,19 +65,15 @@ function Cell(){
 function Controller()
 {
 
-    let player1 = new Player("player1", "x");
-    const player2 = new Player("player2r", "o");
+    let player1 = new Player("Player 1", "x");
+    const player2 = new Player("Player 2", "o");
  
 
     let isPlaying = true;
     let board = Board();
 
-  
-
     let activePlayer = player1;
     
-
-
     const switchPlayer = () => {
         console.log("switching")
         activePlayer === player1 ? activePlayer = player2 : activePlayer = player1;
@@ -87,9 +83,6 @@ function Controller()
     const setPlayerName = (name,player) => player.setName(name);
 
     const getActivePlayer = () => activePlayer;
-
-    const getComputerName = () => player2.getName();
-
 
     const printRound = () => {
         console.log(board.getBoard());
@@ -101,7 +94,8 @@ function Controller()
     }
 
     const playRound = (move) => {
-
+    
+     
         console.log(`${activePlayer.getName()}'s turn`);
         console.log(`${activePlayer.getToken()}`)
         console.log("===========================");
@@ -111,19 +105,23 @@ function Controller()
             printRound();
 
             for(let winCon in winConditions){
-                checkWinCon(winConditions[winCon])
+               result = checkWinCon(winConditions[winCon])
+               if(result.length>0){
+                break;
+               }
+
             }
  
         if(!board.getBoard().includes(null)){
-            console.log("hello its a draw");
-            return "draw";
+            return {message:"draw", result};
         }
        else if(!isPlaying){
-            return `${activePlayer.getName()} won`;
+        console.log(result);
+            return{message:`${activePlayer.getName()} won`, result};
         }
         else {
             switchPlayer();
-            return "progress";
+            return {message:"progress", result};
         }
     
         }
@@ -134,7 +132,7 @@ function Controller()
     const checkWinCon = (rows) => {
         let currentBoard = board.getBoard();
         let currentRow = [];
-      
+        let result = []
         for(let row in rows){
             let counter = 0;
             currentRow = rows[row];
@@ -146,10 +144,12 @@ function Controller()
                 });
                 if(counter == 3){
                     isPlaying = false;
+                    result = currentRow;
                 }
             }
 
         }
+        return result;
     }
 
     // Play is run each time a game is played. A play can end in win of either side or draw.
@@ -206,9 +206,6 @@ function BoardInterface()
                                       grid-template-columns:repeat(3, 1fr)`);
                                     
 
-                                      
-
-
         board.forEach((cell , i) => {
 
         let unit = document.createElement('div');
@@ -261,14 +258,26 @@ function BoardInterface()
         
 
         if(board[selectedDiv] != null){
-            console.log("the field is taken");
             return;
         }else{
-            
-            state_message.innerHTML = game.playRound(selectedDiv);
+            let obj = game.playRound(selectedDiv);
+            let message = obj.message;
+            state_message.innerHTML = message;
             displayBoard();
-        }
+            if(obj.result.length > 0){
+                console.log("reached");
+                let [v1,v2,v3] = obj.result
+                let win1 = document.getElementById(v1);
+                let win2 = document.getElementById(v2);
+                let win3 = document.getElementById(v3);
+                win1.classList.add('winner');
+                win2.classList.add('winner');
+                win3.classList.add('winner');
+                console.log(win1);
+            }
+        
 
+        }
     }
 
     displayBoard();
