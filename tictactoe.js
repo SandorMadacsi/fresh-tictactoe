@@ -95,6 +95,11 @@ function Controller()
         console.log(board.getBoard());
     }
 
+    const play = () =>{
+        board.init();
+        isPlaying = true;
+    }
+
     const playRound = (move) => {
 
         console.log(`${activePlayer.getName()}'s turn`);
@@ -108,17 +113,19 @@ function Controller()
                 checkWinCon(winConditions[winCon])
             }
  
-        if(isPlaying){
-            switchPlayer();
-            return "progress";
+        if(!board.getBoard().includes(null)){
+            console.log("hello its a draw");
+            return "draw";
         }
        else if(!isPlaying){
             return `${activePlayer.getName()} won`;
 
 
         }
-        else if(!board.getBoard().includes(null)){
-           return "draw";
+        else {
+         
+            switchPlayer();
+            return "progress";
         }
     
         }
@@ -152,7 +159,7 @@ function Controller()
     // Play is run each time a game is played. A play can end in win of either side or draw.
 
 
-    return{playRound,getActivePlayer,setPlayerName, getBoard: board.getBoard,init:board.init, getComputerName}
+    return{playRound,getActivePlayer,setPlayerName, getBoard: board.getBoard, getComputerName, play}
 
 }
     
@@ -177,6 +184,7 @@ function BoardInterface()
 {
     const game = Controller();
     let canvas = document.querySelector('.canvas-container');
+    canvas.classList.add('gameover');
     let playButton = document.querySelector('.play');
     let p1;
     const p2 = game.getComputerName();
@@ -188,11 +196,11 @@ function BoardInterface()
     state_message.innerHTML = "progress";
 
     playButton.addEventListener('click', function(){
+        canvas.classList.remove('gameover');
         p1 = prompt("Enter your name");
         game.setPlayerName(p1);
+        game.play();
         p1nameContainer.innerText = p1;
-        game.init();
-        isPlaying = true;
         state_message.innerHTML = "progress";
         displayBoard();
     });
@@ -211,7 +219,6 @@ function BoardInterface()
                                     
 
                                       
-        
 
 
         board.forEach((cell , i) => {
@@ -221,7 +228,6 @@ function BoardInterface()
         let valContainer = document.createElement('div');
         unit.classList.add('unit');
         let value = document.createElement('h1');
-        value.innerHTML = "Test";
 
         valContainer.appendChild(value);
         valContainer.classList.add('valConainer');
@@ -250,22 +256,23 @@ function BoardInterface()
         unit.addEventListener('click',clickMove);
         value.innerText= cell;
     });
+
     if(state_message.innerHTML != "progress"){
-        console.log(state_message.innerHTML)
-        canvas.classList.toggle('gameover');
+        canvas.classList.add('gameover');
     }
 
     }
     function clickMove(e){
-
+        const board = game.getBoard();
         const selectedDiv = Number(e.currentTarget.id);
-        console.log(selectedDiv);
+        
 
-        if(selectedDiv !==0 && !selectedDiv){
+        if(board[selectedDiv] != null){
             console.log("the field is taken");
             return;
         }else{
-            state_message.innerHTML =  game.playRound(selectedDiv);
+            
+            state_message.innerHTML = game.playRound(selectedDiv);
             displayBoard();
         }
 
