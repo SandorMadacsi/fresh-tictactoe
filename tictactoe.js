@@ -64,11 +64,9 @@ function Cell(){
 
 function Controller()
 {
-
     let player1 = new Player("Player 1", "x");
     const player2 = new Player("Player 2", "o");
  
-
     let isPlaying = true;
     let board = Board();
 
@@ -81,13 +79,12 @@ function Controller()
     }
 
     const setPlayerName = (name,player) => player.setName(name);
-
     const getActivePlayer = () => activePlayer;
-
     const printRound = () => {
         console.log(board.getBoard());
     }
 
+    //reset game conditions
     const play = () =>{
         board.init();
         isPlaying = true;
@@ -95,12 +92,11 @@ function Controller()
 
     const playRound = (move) => {
     
-     
         console.log(`${activePlayer.getName()}'s turn`);
         console.log(`${activePlayer.getToken()}`)
         console.log("===========================");
         if(board.checkMove(move)){
-            console.log(`Dropping ${getActivePlayer().getName()}'s token into cell: ${move}`)
+            console.log(`Dropping ${getActivePlayer().getName()}'s token into cell: ${move}`);
             board.dropToken(move, getActivePlayer().getToken());
             printRound();
 
@@ -121,7 +117,7 @@ function Controller()
         }
         else {
             switchPlayer();
-            return {message:"progress", result};
+            return {message:"in-game", result};
         }
     
         }
@@ -170,7 +166,6 @@ function Player(n, token){
     const setScore = () => {
         this.score = score + 1;
     }
-
     return{getName, setName, getToken, getScore, setScore}
 }
 
@@ -183,13 +178,13 @@ function BoardInterface()
     let playButton = document.querySelector('.play');
 
     let state_message = document.querySelector('#state-message');
-    state_message.innerHTML = "start game";
+    state_message.innerHTML = "to be started";
 
     playButton.addEventListener('click', function(){
         canvas.classList.remove('gameover');
         game.play();
 
-        state_message.innerHTML = "progress";
+        state_message.innerHTML = "in-game";
         displayBoard();
     });
 
@@ -198,9 +193,6 @@ function BoardInterface()
     const displayBoard = () => {
 
         const board = game.getBoard();
-
-
-
         canvas.innerHTML = "";
         canvas.setAttribute('style', `display:grid;
                                       grid-template-columns:repeat(3, 1fr)`);
@@ -240,9 +232,12 @@ function BoardInterface()
         canvas.appendChild(unit);
         unit.addEventListener('click',clickMove);
         value.innerText= cell;
+        if(cell != null){
+            unit.classList.add("gameover");
+        }
     });
 
-    if(state_message.innerHTML == "progress"){
+    if(state_message.innerHTML == "in-game"){
         playButton.classList.add('gameover');
     }
 
@@ -256,14 +251,15 @@ function BoardInterface()
         const board = game.getBoard();
         const selectedDiv = Number(e.currentTarget.id);
         
-
-        if(board[selectedDiv] != null){
-            return;
-        }else{
+        //taken cells
+  
+            //playing rounds
             let obj = game.playRound(selectedDiv);
             let message = obj.message;
             state_message.innerHTML = message;
             displayBoard();
+
+            //highlight winning row
             if(obj.result.length > 0){
                 console.log("reached");
                 let [v1,v2,v3] = obj.result
@@ -276,8 +272,6 @@ function BoardInterface()
                 console.log(win1);
             }
         
-
-        }
     }
 
     displayBoard();
